@@ -7482,9 +7482,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="A-Common-Hierarchical-Abstract-Representation-of-Music:-applications-in-historical-musicology">A Common Hierarchical Abstract Representation of Music: applications in historical musicology<a class="anchor-link" href="#A-Common-Hierarchical-Abstract-Representation-of-Music:-applications-in-historical-musicology">¶</a></h1><p>Given a more-or-less comprehensive corpus of encoded historical lute tablatures like the augmented ‘Electronic Corpus of Lute Music’ (ECOLM) currently under development, an entirely new mode of investigation of the corpus and its relation to other repertories, such as contemporary vocal or keyboard music, could become possible. Text-based encodings of works may be directly compared using exact matching, but this does not allow recognition of transposed versions, or those for a differently-tuned instrument than a query; furthermore, duple- and triple-time versions of the same music will not, in general, be matched, nor those in which durations have been globally augmented or diminished. While ingenious indexing strategies might overcome some of these problems for a particular repertory of music (for example, the 16th-century lute fantasy and related genres), they are unlikely to permit extra-corpus searches for parallel motives or passages within contemporary vocal music, which have long been recognised as crucial in the evolution of western lute music.</p>
+<h1 id="A-Common-Hierarchical-Abstract-Representation-of-Music:-applications-in-historical-musicology">A Common Hierarchical Abstract Representation of Music: applications in historical musicology<a class="anchor-link" href="#A-Common-Hierarchical-Abstract-Representation-of-Music:-applications-in-historical-musicology">¶</a></h1><p>THIS NOTEBOOK IS A WORK IN PROGRESS AND IS UNDER CONTINUAL DEVELOPMENT.</p>
+<p>Given a more-or-less comprehensive corpus of encoded historical lute tablatures like the augmented ‘Electronic Corpus of Lute Music’ (ECOLM) currently under development, an entirely new mode of investigation of the corpus and its relation to other repertories, such as contemporary vocal or keyboard music, could become possible. Text-based encodings of works may be directly compared using exact matching, but this does not allow recognition of transposed versions, or those for a differently-tuned instrument than a query; furthermore, duple- and triple-time versions of the same music will not, in general, be matched, nor those in which durations have been globally augmented or diminished. While ingenious indexing strategies might overcome some of these problems for a particular repertory of music (for example, the 16th-century lute fantasy and related genres), they are unlikely to permit extra-corpus searches for parallel motives or passages within contemporary vocal music, which have long been recognised as crucial in the evolution of western lute music.</p>
 <p>We present CHARM, an abstract, hierarchical music knowledge representation system that admits federation of data sources in multiple formats by means of semantic-level annotation and query specification. From the user’s perspective, search and discovery operations are specified in terms of musical terminology applied to “constituents” (groups of musical objects – e.g., notes, phrases, motives, etc.), independently of the data source and format. CHARM is equipped with data interfaces for MIDI and TabCode (other formats in progress), and it can represent audio recordings, allowing detailed association of individual notes with specific spectral content, permitting the annotation of richly detailed analyses of sources and their direct, detailed connection with performance recordings.</p>
 <p>In this notebook we demonstrate how CHARM can be used to construct music knowledge bases from encodings of lute tablature. Using CHARM to construct knowledge bases requires the implementation of interfaces for concrete data sources and engineering the coordination of these interfaces. Here we use the Julia programming language, which has an expressive type system and method overloading, the combination of which is exploited to implement interfaces with type-based dynamic dispatch.</p>
+<p>The code below contains 1) the CHARM definition in Julia 2) a CHARM interface for tabcode 3) an example knowledge base for a tabcode file 4) an augmentation of this representation with a representation of the topline 5) how to knowledge bases can be queried using the CHARM query language.</p>
 </div>
 </div>
 </div>
@@ -7972,7 +7974,7 @@ e2
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=861934bc-e840-48da-970a-e85a3ae806f9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6c3fa9ca-94cd-47e8-8a13-a6f63a3b7f5b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7980,9 +7982,119 @@ e2
 <div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="n">Base</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>false</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=861934bc-e840-48da-970a-e85a3ae806f9">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">Tabcode</span>
 
-<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span>
+
+<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Id</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="w"> </span><span class="k">end</span>
+
+<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Constituent</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Constituent</span><span class="w"> </span><span class="k">end</span>
+
+<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Hierarchy</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Hierarchy</span><span class="w"> </span><span class="k">end</span>
+
+<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Attribute</span><span class="p">{</span><span class="kt">N</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="kt">Attribute</span><span class="p">{</span><span class="kt">N</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">Note</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span>
+<span class="w">    </span><span class="n">course</span>
+<span class="w">    </span><span class="n">fret</span>
+<span class="w">    </span><span class="n">dur</span>
+<span class="w">    </span><span class="n">chord</span>
+<span class="w">    </span><span class="n">bar</span>
+<span class="w">    </span><span class="n">system</span>
+<span class="w">    </span><span class="n">page</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">Chord</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span>
+<span class="w">    </span><span class="n">dur</span>
+<span class="w">    </span><span class="n">bar</span>
+<span class="w">    </span><span class="n">system</span>
+<span class="w">    </span><span class="n">page</span>
+<span class="w">    </span><span class="n">notes</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">Bar</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span>
+<span class="w">    </span><span class="n">system</span>
+<span class="w">    </span><span class="n">page</span>
+<span class="w">    </span><span class="n">chords</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">System</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span>
+<span class="w">    </span><span class="n">page</span>
+<span class="w">    </span><span class="n">bars</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">Page</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span>
+<span class="w">    </span><span class="n">systems</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">File</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Hierarchy</span>
+<span class="w">    </span><span class="n">notes</span>
+<span class="w">    </span><span class="n">chords</span>
+<span class="w">    </span><span class="n">bars</span>
+<span class="w">    </span><span class="n">systems</span>
+<span class="w">    </span><span class="n">pages</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">FRET</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:FRET</span><span class="p">,</span><span class="kt">String</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:FRET</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRET</span><span class="p">()</span>
+
+<span class="k">struct</span> <span class="kt">COURSE</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:COURSE</span><span class="p">,</span><span class="kt">Int</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:COURSE</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">COURSE</span><span class="p">()</span>
+
+<span class="k">struct</span> <span class="kt">BAR</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:BAR</span><span class="p">,</span><span class="kt">String</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:BAR</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BAR</span><span class="p">()</span>
+
+<span class="n">durnos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="sc">'B'</span><span class="o">=&gt;</span><span class="mf">8.0</span><span class="p">,</span><span class="sc">'W'</span><span class="o">=&gt;</span><span class="mf">4.0</span><span class="p">,</span><span class="sc">'H'</span><span class="o">=&gt;</span><span class="mf">2.0</span><span class="p">,</span><span class="sc">'Q'</span><span class="o">=&gt;</span><span class="mf">1.0</span><span class="p">,</span><span class="sc">'E'</span><span class="o">=&gt;</span><span class="mf">0.5</span><span class="p">,</span><span class="sc">'S'</span><span class="o">=&gt;</span><span class="mf">0.25</span><span class="p">,</span><span class="sc">'T'</span><span class="o">=&gt;</span><span class="mf">0.125</span><span class="p">,</span><span class="sc">'Y'</span><span class="o">=&gt;</span><span class="mf">0.0625</span><span class="p">,</span><span class="sc">'Z'</span><span class="o">=&gt;</span><span class="mf">0.03125</span><span class="p">)</span>
+
+<span class="n">getdurno</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">begin</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">durnos</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">    </span><span class="n">length</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">NDUR</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:NDUR</span><span class="p">,</span><span class="kt">Float64</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:NDUR</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NDUR</span><span class="p">()</span>
+
+<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Note"</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Chord</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Chord"</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Bar</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Bar"</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">System</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"System"</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Page</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Page"</span>
+
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">FRET</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">fret</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">COURSE</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">course</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">DUR</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">dur</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">DUR</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Chord</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">dur</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">NDUR</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getdurno</span><span class="p">(</span><span class="n">geta</span><span class="p">(</span><span class="ss">:DUR</span><span class="p">,</span><span class="n">x</span><span class="p">))</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">BAR</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Chord</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">bar</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">JSON</span>
 
 <span class="k">function</span><span class="w"> </span><span class="n">parse</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 
@@ -8006,12 +8118,12 @@ e2
 <span class="w">                </span><span class="n">course</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="s">"pitch"</span><span class="p">][</span><span class="s">"course"</span><span class="p">]</span>
 <span class="w">                </span><span class="n">fret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="s">"pitch"</span><span class="p">][</span><span class="s">"fret"</span><span class="p">]</span>
 <span class="w">                </span>
-<span class="w">                </span><span class="n">note</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">n</span><span class="p">,</span><span class="n">course</span><span class="o">=</span><span class="n">course</span><span class="p">,</span><span class="n">fret</span><span class="o">=</span><span class="n">fret</span><span class="p">,</span><span class="n">dur</span><span class="o">=</span><span class="n">dur</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+<span class="w">                </span><span class="n">note</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Note</span><span class="p">(</span><span class="n">course</span><span class="p">,</span><span class="n">fret</span><span class="p">,</span><span class="n">dur</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
 <span class="w">                </span><span class="n">push!</span><span class="p">(</span><span class="n">notes</span><span class="p">,</span><span class="n">note</span><span class="p">)</span>
 <span class="w">                </span><span class="n">n</span><span class="o">+=</span><span class="mi">1</span>
 <span class="w">            </span><span class="k">end</span>
 <span class="w">    </span>
-<span class="w">            </span><span class="n">chord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">dur</span><span class="o">=</span><span class="n">dur</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">notes</span><span class="o">=</span><span class="n">ns</span><span class="p">)</span>
+<span class="w">            </span><span class="n">chord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Chord</span><span class="p">(</span><span class="n">dur</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">ns</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">chords</span><span class="p">,</span><span class="n">chord</span><span class="p">)</span>
 <span class="w">            </span>
 <span class="w">            </span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
@@ -8019,101 +8131,63 @@ e2
 <span class="w">        </span><span class="k">end</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">hasttype</span><span class="p">(</span><span class="s">"Barline"</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
-<span class="w">            </span><span class="n">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">chords</span><span class="o">=</span><span class="n">cs</span><span class="p">)</span>
+<span class="w">            </span><span class="n">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Bar</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cs</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">bars</span><span class="p">,</span><span class="n">bar</span><span class="p">)</span>
 <span class="w">            </span><span class="n">cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
 <span class="w">            </span><span class="n">b</span><span class="o">+=</span><span class="mi">1</span>
 <span class="w">        </span><span class="k">end</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">hasttype</span><span class="p">(</span><span class="s">"SystemBreak"</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
-<span class="w">            </span><span class="n">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">bars</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
+<span class="w">            </span><span class="n">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">bs</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">systems</span><span class="p">,</span><span class="n">system</span><span class="p">)</span>
 <span class="w">            </span><span class="n">bs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
 <span class="w">            </span><span class="n">s</span><span class="o">+=</span><span class="mi">1</span>
 <span class="w">        </span><span class="k">end</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">hasttype</span><span class="p">(</span><span class="s">"PageBreak"</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-<span class="w">            </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">systems</span><span class="o">=</span><span class="n">ss</span><span class="p">)</span>
+<span class="w">            </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Page</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span>
 <span class="w">            </span><span class="n">push!</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span><span class="n">page</span><span class="p">)</span>
 <span class="w">            </span><span class="n">ss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
 <span class="w">            </span><span class="n">p</span><span class="o">+=</span><span class="mi">1</span>
 <span class="w">        </span><span class="k">end</span>
 <span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="n">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">bars</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
+<span class="w">    </span><span class="n">system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">bs</span><span class="p">)</span>
 <span class="w">    </span><span class="n">push!</span><span class="p">(</span><span class="n">systems</span><span class="p">,</span><span class="n">system</span><span class="p">)</span>
 <span class="w">    </span><span class="n">push!</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
-<span class="w">    </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="n">systems</span><span class="o">=</span><span class="n">ss</span><span class="p">)</span>
+<span class="w">    </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Page</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="w">    </span><span class="n">push!</span><span class="p">(</span><span class="n">pages</span><span class="p">,</span><span class="n">page</span><span class="p">)</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">notes</span><span class="p">,</span><span class="w"> </span><span class="n">chords</span><span class="p">,</span><span class="w"> </span><span class="n">bars</span><span class="p">,</span><span class="w"> </span><span class="n">systems</span><span class="p">,</span><span class="w"> </span><span class="n">pages</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">File</span><span class="p">(</span><span class="n">notes</span><span class="p">,</span><span class="w"> </span><span class="n">chords</span><span class="p">,</span><span class="w"> </span><span class="n">bars</span><span class="p">,</span><span class="w"> </span><span class="n">systems</span><span class="p">,</span><span class="w"> </span><span class="n">pages</span><span class="p">)</span>
 
 <span class="k">end</span>
 
-
-<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Id</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Constituent</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Constituent</span><span class="w"> </span><span class="k">end</span>
-<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Hierarchy</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Hierarchy</span><span class="w"> </span><span class="k">end</span>
-
-<span class="k">struct</span> <span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">struct</span> <span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">struct</span> <span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">struct</span> <span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">struct</span> <span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
-
-<span class="k">struct</span> <span class="kt">Con</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Constituent</span><span class="w"> </span><span class="k">end</span>
-
-<span class="k">struct</span> <span class="kt">File</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Hierarchy</span><span class="w"> </span>
-<span class="w">    </span><span class="n">notes</span>
-<span class="w">    </span><span class="n">chords</span>
-<span class="w">    </span><span class="n">bars</span>
-<span class="w">    </span><span class="n">systems</span>
-<span class="w">    </span><span class="n">pages</span>
-<span class="w">    </span><span class="n">File</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">([],[],[],[],[])</span>
-<span class="w">    </span><span class="n">File</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">(</span><span class="n">parse</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
-<span class="k">end</span><span class="w"> </span>
-
-<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Attribute</span><span class="p">{</span><span class="kt">N</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="kt">Attribute</span><span class="p">{</span><span class="kt">N</span><span class="p">,</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
-
-<span class="k">struct</span> <span class="kt">FRET</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:FRET</span><span class="p">,</span><span class="kt">String</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:FRET</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRET</span><span class="p">()</span>
-
-<span class="k">struct</span> <span class="kt">COURSE</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:COURSE</span><span class="p">,</span><span class="kt">Int</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:COURSE</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">COURSE</span><span class="p">()</span>
-
-<span class="k">struct</span> <span class="kt">BAR</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:BAR</span><span class="p">,</span><span class="kt">String</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:BAR</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BAR</span><span class="p">()</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">none</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}}()</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">chords</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">none</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Con</span><span class="p">{</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}}()</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">bars</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">none</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Con</span><span class="p">{</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">}}()</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">systems</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">none</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Con</span><span class="p">{</span><span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">}}()</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">none</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Con</span><span class="p">{</span><span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">}}()</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Id</span><span class="p">[]</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Id</span><span class="p">[</span><span class="kt">Note</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">chords</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Id</span><span class="p">[</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">bars</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="p">]</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Id</span><span class="p">[</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">systems</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">bars</span><span class="p">]</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Id</span><span class="p">[</span><span class="kt">System</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">pages</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">systems</span><span class="p">]</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">dom</span><span class="p">(</span><span class="n">f</span><span class="o">::</span><span class="kt">File</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcat</span><span class="p">(</span><span class="n">Id</span><span class="p">[</span><span class="kt">Page</span><span class="p">{</span><span class="kt">p</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="p">)],</span><span class="n">Id</span><span class="p">[</span><span class="kt">System</span><span class="p">{</span><span class="kt">s</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">systems</span><span class="p">)],</span><span class="n">Id</span><span class="p">[</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">b</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">bars</span><span class="p">)],</span><span class="n">Id</span><span class="p">[</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">c</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">chords</span><span class="p">)],</span><span class="n">Id</span><span class="p">[</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">notes</span><span class="p">)])</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Note"</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Chord"</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Bar"</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"System"</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">getp</span><span class="p">(</span><span class="o">::</span><span class="kt">TYPE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Page"</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">FRET</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">fret</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">COURSE</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">course</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">DUR</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">dur</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">DUR</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chords</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">dur</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">BAR</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">b</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">BAR</span><span class="p">,</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chords</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">b</span>
-
 <span class="k">end</span>
-
-<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>Main.Tabcode</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=87d89a59-d0e7-4861-87c4-e1dda3177e89">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span>
 </pre></div>
 </div>
 </div>
@@ -8135,7 +8209,7 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">RenaissancePitch</span>
@@ -8143,12 +8217,12 @@ e2
 <span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span>
 <span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span>
 
-<span class="n">course</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">67</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">57</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="mi">42</span><span class="p">]</span>
+<span class="n">courses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">67</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">57</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="mi">42</span><span class="p">]</span>
 <span class="n">frets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="s">"a"</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">,</span><span class="s">"b"</span><span class="o">=&gt;</span><span class="mi">4</span><span class="p">,</span><span class="s">"c"</span><span class="o">=&gt;</span><span class="mi">5</span><span class="p">,</span><span class="s">"d"</span><span class="o">=&gt;</span><span class="mi">7</span><span class="p">,</span><span class="s">"e"</span><span class="o">=&gt;</span><span class="mi">9</span><span class="p">,</span><span class="s">"f"</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span><span class="s">"h"</span><span class="o">=&gt;</span><span class="mi">11</span><span class="p">)</span>
 
 <span class="n">getmidinote</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span><span class="n">fs</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cs</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">+</span><span class="n">fs</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
 
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">PITCH</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Tabcode</span><span class="o">.</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">begin</span><span class="w"> </span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">PITCH</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">begin</span><span class="w"> </span>
 <span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">geta</span><span class="p">(</span><span class="ss">:COURSE</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
 <span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">geta</span><span class="p">(</span><span class="ss">:FRET</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">getmidinote</span><span class="p">(</span><span class="n">courses</span><span class="p">,</span><span class="n">frets</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">f</span><span class="p">)</span>
@@ -8165,7 +8239,7 @@ e2
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[14]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>Main.RenaissancePitch</pre>
 </div>
@@ -8188,14 +8262,38 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">Example</span>
 
-<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">RenaissancePitch</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">RenaissancePitch</span>
 
-<span class="n">__data__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s">"output.json"</span><span class="p">)</span>
+<span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">Id</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="w"> </span><span class="k">end</span>
+
+<span class="k">struct</span> <span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
+<span class="k">struct</span> <span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
+<span class="k">struct</span> <span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
+<span class="k">struct</span> <span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
+<span class="k">struct</span> <span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="k">end</span>
+
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Note</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[]</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Chord</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="kt">Note</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Bar</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">chords</span><span class="p">]</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">System</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">bars</span><span class="p">]</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Page</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="kt">System</span><span class="p">{</span><span class="kt">x</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">systems</span><span class="p">]</span>
+
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">none</span><span class="p">)</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">chords</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">none</span><span class="p">)</span><span class="w"> </span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">bars</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">none</span><span class="p">)</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">System</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">systems</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">none</span><span class="p">)</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Page</span><span class="p">{</span><span class="kt">n</span><span class="p">},</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">none</span><span class="p">)</span>
+
+<span class="n">CHARM</span><span class="o">.</span><span class="n">dom</span><span class="p">(</span><span class="n">f</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">File</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vcat</span><span class="p">([</span><span class="kt">Page</span><span class="p">{</span><span class="kt">p</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">pages</span><span class="p">)],[</span><span class="kt">System</span><span class="p">{</span><span class="kt">s</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">systems</span><span class="p">)],[</span><span class="kt">Bar</span><span class="p">{</span><span class="kt">b</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">bars</span><span class="p">)],[</span><span class="kt">Chord</span><span class="p">{</span><span class="kt">c</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">chords</span><span class="p">)],[</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">notes</span><span class="p">)])</span>
+
+<span class="n">__data__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tabcode</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s">"output.json"</span><span class="p">)</span>
 
 <span class="k">end</span>
 </pre></div>
@@ -8208,9 +8306,130 @@ e2
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>Main.Example</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=06380b51-0d25-4eb8-8b75-22071f98c2ec">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Example</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4493d79d-d10e-4feb-8ea4-20d6f2a2914b">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="n">dom</span><span class="p">(</span><span class="n">Example</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[20]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>2098-element Vector{Main.Example.Id}:
+ Main.Example.Page{1}()
+ Main.Example.Page{2}()
+ Main.Example.Page{3}()
+ Main.Example.System{1}()
+ Main.Example.System{2}()
+ Main.Example.System{3}()
+ Main.Example.System{4}()
+ Main.Example.System{5}()
+ Main.Example.System{6}()
+ Main.Example.System{7}()
+ Main.Example.System{8}()
+ Main.Example.System{9}()
+ Main.Example.System{10}()
+ ⋮
+ Main.Example.Note{1199}()
+ Main.Example.Note{1200}()
+ Main.Example.Note{1201}()
+ Main.Example.Note{1202}()
+ Main.Example.Note{1203}()
+ Main.Example.Note{1204}()
+ Main.Example.Note{1205}()
+ Main.Example.Note{1206}()
+ Main.Example.Note{1207}()
+ Main.Example.Note{1208}()
+ Main.Example.Note{1209}()
+ Main.Example.Note{1210}()</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fd2c8d83-9b40-46cd-9458-2b9168293135">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="n">fnd</span><span class="p">(</span><span class="n">Example</span><span class="o">.</span><span class="kt">System</span><span class="p">{</span><span class="mi">10</span><span class="p">}(),</span><span class="n">Example</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">pts</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[21]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>3-element Vector{Main.CHARM.Id}:
+ Main.Example.Bar{26}()
+ Main.Example.Bar{27}()
+ Main.Example.Bar{28}()</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cd10ba96-26d5-4ec0-b2fd-af7b3407cbe1">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="n">fnd</span><span class="p">(</span><span class="n">Example</span><span class="o">.</span><span class="kt">Note</span><span class="p">{</span><span class="mi">1207</span><span class="p">}(),</span><span class="n">Example</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">geta</span><span class="p">(</span><span class="ss">:PITCH</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[22]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>62</pre>
 </div>
 </div>
 </div>
@@ -8231,27 +8450,27 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">Topline</span>
 
-<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span><span class="p">,</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Example</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">CHARM</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Tabcode</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Example</span>
 
-<span class="n">topline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">Tabcode</span><span class="o">.</span><span class="kt">Note</span><span class="p">{</span><span class="kt">c</span><span class="o">.</span><span class="kt">notes</span><span class="p">[</span><span class="mi">1</span><span class="p">]}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">Example</span><span class="o">.</span><span class="n">__data__</span><span class="o">.</span><span class="n">chords</span><span class="p">]</span>
+<span class="n">topline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">Example</span><span class="o">.</span><span class="kt">Note</span><span class="p">{</span><span class="kt">c</span><span class="o">.</span><span class="kt">notes</span><span class="p">[</span><span class="mi">1</span><span class="p">]}()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">Example</span><span class="o">.</span><span class="n">__data__</span><span class="o">.</span><span class="n">chords</span><span class="p">]</span>
 
 <span class="k">export</span><span class="w"> </span><span class="n">Topline</span>
 
 <span class="k">struct</span> <span class="kt">Id</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="w"> </span><span class="k">end</span>
-<span class="k">struct</span> <span class="kt">Con</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Constituent</span><span class="w"> </span>
-<span class="w">    </span><span class="n">Con</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">new</span><span class="p">{</span><span class="kt">Topline</span><span class="p">}()</span>
-<span class="k">end</span>
+<span class="k">struct</span> <span class="kt">TL</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Constituent</span><span class="w"> </span><span class="k">end</span>
 <span class="k">struct</span> <span class="kt">Hierarchy</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Hierarchy</span><span class="w"> </span><span class="k">end</span>
 
 <span class="n">__data__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Hierarchy</span><span class="p">()</span>
 
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="o">::</span><span class="kt">Id</span><span class="p">,</span><span class="o">::</span><span class="kt">Hierarchy</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Con</span><span class="p">()</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Id</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">topline</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="o">::</span><span class="kt">Id</span><span class="p">,</span><span class="o">::</span><span class="kt">Hierarchy</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TL</span><span class="p">()</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">pts</span><span class="p">(</span><span class="o">::</span><span class="kt">TL</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">topline</span>
 
 <span class="n">CHARM</span><span class="o">.</span><span class="n">dom</span><span class="p">(</span><span class="o">::</span><span class="kt">Hierarchy</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">Id</span><span class="p">[</span><span class="n">Id</span><span class="p">()]</span>
 
@@ -8266,9 +8485,23 @@ e2
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[24]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>Main.Topline</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=d529ecb4-a20d-4728-9e2e-3f14d99ab44d">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-julia"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Main</span><span class="o">.</span><span class="n">Topline</span>
+</pre></div>
 </div>
 </div>
 </div>
@@ -8289,7 +8522,7 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">KB</span>
@@ -8302,7 +8535,7 @@ e2
 <span class="k">struct</span> <span class="kt">Data</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="n">Hierarchy</span><span class="w"> </span><span class="k">end</span>
 <span class="n">__data__</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Data</span><span class="p">()</span>
 
-<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Tabcode</span><span class="o">.</span><span class="n">Id</span><span class="p">,</span><span class="o">::</span><span class="kt">Data</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Example</span><span class="p">)</span>
+<span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Example</span><span class="o">.</span><span class="n">Id</span><span class="p">,</span><span class="o">::</span><span class="kt">Data</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Example</span><span class="p">)</span>
 <span class="n">CHARM</span><span class="o">.</span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Topline</span><span class="o">.</span><span class="n">Id</span><span class="p">,</span><span class="o">::</span><span class="kt">Data</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fnd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">Topline</span><span class="p">)</span>
 <span class="n">CHARM</span><span class="o">.</span><span class="n">dom</span><span class="p">(</span><span class="o">::</span><span class="kt">Data</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">dom</span><span class="p">(</span><span class="n">Topline</span><span class="p">)</span><span class="o">...</span><span class="p">,</span><span class="n">dom</span><span class="p">(</span><span class="n">Example</span><span class="p">)</span><span class="o">...</span><span class="p">]</span>
 
@@ -8319,7 +8552,7 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [28]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="n">cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cts</span><span class="p">(</span><span class="n">KB</span><span class="p">);</span>
@@ -8333,7 +8566,7 @@ e2
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-julia"><pre><span></span><span class="n">fnd</span><span class="p">(</span><span class="n">Topline</span><span class="o">.</span><span class="n">Id</span><span class="p">(),</span><span class="n">KB</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">pts</span>
@@ -8347,23 +8580,59 @@ e2
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[22]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[29]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>Main.CHARM.Id[]</pre>
+<pre>813-element Vector{Main.Example.Note}:
+ Main.Example.Note{1}()
+ Main.Example.Note{6}()
+ Main.Example.Note{7}()
+ Main.Example.Note{8}()
+ Main.Example.Note{9}()
+ Main.Example.Note{12}()
+ Main.Example.Note{13}()
+ Main.Example.Note{15}()
+ Main.Example.Note{16}()
+ Main.Example.Note{17}()
+ Main.Example.Note{18}()
+ Main.Example.Note{21}()
+ Main.Example.Note{22}()
+ ⋮
+ Main.Example.Note{1196}()
+ Main.Example.Note{1197}()
+ Main.Example.Note{1198}()
+ Main.Example.Note{1199}()
+ Main.Example.Note{1200}()
+ Main.Example.Note{1201}()
+ Main.Example.Note{1202}()
+ Main.Example.Note{1203}()
+ Main.Example.Note{1204}()
+ Main.Example.Note{1205}()
+ Main.Example.Note{1209}()
+ Main.Example.Note{1210}()</pre>
 </div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fa2082c4-550c-4561-a7f5-6f5377c11bdd">
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f2ef7fb8-caa6-4ba5-ae94-26055694b81c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Querying-the-Knowledge-Base">Querying the Knowledge Base<a class="anchor-link" href="#Querying-the-Knowledge-Base">¶</a></h2>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=37b2a445-80f3-49fb-b88e-c1884389b879">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [23]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [31]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">notes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHARM</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="n">pts</span><span class="p">(</span><span class="n">fnd</span><span class="p">(</span><span class="n">Topline</span><span class="p">(),</span><span class="n">KB</span><span class="p">)),</span><span class="n">KB</span><span class="p">)</span>
-<span class="n">unique</span><span class="p">([</span><span class="n">geta</span><span class="p">(</span><span class="ss">:DUR</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">notes</span><span class="p">])</span>
+<div class="highlight hl-julia"><pre><span></span><span class="n">cs</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">SELECT</span><span class="p">(</span><span class="n">AND</span><span class="p">(</span><span class="n">HASP</span><span class="p">(</span><span class="ss">:TYPE</span><span class="p">,</span><span class="s">"Chord"</span><span class="p">),</span><span class="n">HASA</span><span class="p">(</span><span class="ss">:BAR</span><span class="p">,</span><span class="mi">10</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -8373,186 +8642,41 @@ e2
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-MethodError: objects of type Module are not callable
-
-Stacktrace:
- [1] top-level scope
-   @ In[23]:1</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[31]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>26-element Vector{Pair{Main.CHARM.Id, Main.CHARM.Constituent}}:
+ Main.Example.Chord{127}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[195, 196])
+ Main.Example.Chord{128}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[197])
+ Main.Example.Chord{129}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[198])
+ Main.Example.Chord{130}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[199])
+ Main.Example.Chord{131}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[200])
+ Main.Example.Chord{132}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[201])
+ Main.Example.Chord{133}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[202])
+ Main.Example.Chord{134}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[203])
+ Main.Example.Chord{135}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[204])
+ Main.Example.Chord{136}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[205])
+ Main.Example.Chord{137}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[206])
+ Main.Example.Chord{138}() =&gt; Main.Tabcode.Chord("S", 10, 4, 1, Any[207, 208])
+ Main.Example.Chord{139}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[209])
+ Main.Example.Chord{140}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[210])
+ Main.Example.Chord{141}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[211])
+ Main.Example.Chord{142}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[212])
+ Main.Example.Chord{143}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[213])
+ Main.Example.Chord{144}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[214])
+ Main.Example.Chord{145}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[215, 216])
+ Main.Example.Chord{146}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[217])
+ Main.Example.Chord{147}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[218])
+ Main.Example.Chord{148}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[219])
+ Main.Example.Chord{149}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[220])
+ Main.Example.Chord{150}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[221])
+ Main.Example.Chord{151}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[222])
+ Main.Example.Chord{152}() =&gt; Main.Tabcode.Chord("T", 10, 4, 1, Any[223])</pre>
 </div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6cd619a5-f67e-456e-84bd-73429102a442">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">ds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unique</span><span class="p">([</span><span class="n">geta</span><span class="p">(</span><span class="ss">:DUR</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">notes</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-UndefVarError: `notes` not defined
-
-Stacktrace:
- [1] top-level scope
-   @ In[24]:1</pre>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=56841eaf-622e-4fdb-97f3-8a04817783f9">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">length</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-UndefVarError: `ds` not defined
-
-Stacktrace:
- [1] top-level scope
-   @ In[25]:1</pre>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a370985e-73ce-4e5c-ae13-2341c0b46c6d">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [26]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-UndefVarError: `ds` not defined
-
-Stacktrace:
- [1] top-level scope
-   @ In[26]:1</pre>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ea049868-7bba-41c5-9599-4be383587bfd">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">durnos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="sc">'B'</span><span class="o">=&gt;</span><span class="mf">8.0</span><span class="p">,</span><span class="sc">'W'</span><span class="o">=&gt;</span><span class="mf">4.0</span><span class="p">,</span><span class="sc">'H'</span><span class="o">=&gt;</span><span class="mf">2.0</span><span class="p">,</span><span class="sc">'Q'</span><span class="o">=&gt;</span><span class="mf">1.0</span><span class="p">,</span><span class="sc">'E'</span><span class="o">=&gt;</span><span class="mf">0.5</span><span class="p">,</span><span class="sc">'S'</span><span class="o">=&gt;</span><span class="mf">0.25</span><span class="p">,</span><span class="sc">'T'</span><span class="o">=&gt;</span><span class="mf">0.125</span><span class="p">,</span><span class="sc">'Y'</span><span class="o">=&gt;</span><span class="mf">0.0625</span><span class="p">,</span><span class="sc">'Z'</span><span class="o">=&gt;</span><span class="mf">0.03125</span><span class="p">)</span>
-
-<span class="n">getdurno</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">begin</span>
-<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">durnos</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-<span class="w">    </span><span class="n">length</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">x</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="k">struct</span> <span class="kt">NDUR</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">CHARM</span><span class="o">.</span><span class="kt">Attribute</span><span class="p">{</span><span class="ss">:NDUR</span><span class="p">,</span><span class="kt">Float64</span><span class="p">}</span><span class="w"> </span><span class="k">end</span>
-<span class="n">CHARM</span><span class="o">.</span><span class="n">__attributes__</span><span class="p">(</span><span class="o">::</span><span class="kt">Val</span><span class="p">{</span><span class="ss">:NDUR</span><span class="p">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NDUR</span><span class="p">()</span>
-
-<span class="n">CHARM</span><span class="o">.</span><span class="n">geta</span><span class="p">(</span><span class="o">::</span><span class="kt">NDUR</span><span class="p">,</span><span class="n">x</span><span class="o">::</span><span class="kt">Con</span><span class="p">{</span><span class="kt">Note</span><span class="p">{</span><span class="kt">n</span><span class="p">}})</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="kt">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getdurno</span><span class="p">(</span><span class="n">geta</span><span class="p">(</span><span class="ss">:DUR</span><span class="p">,</span><span class="n">x</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-UndefVarError: `Con` not defined
-
-Stacktrace:
- [1] top-level scope
-   @ In[27]:12</pre>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=21b746a4-c0b5-43e3-add6-c6214b9d538d">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [28]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-julia"><pre><span></span><span class="n">geta</span><span class="p">(</span><span class="ss">:NDUR</span><span class="p">,</span><span class="n">Con</span><span class="p">(</span><span class="kt">Note</span><span class="p">{</span><span class="mi">1</span><span class="p">}()))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-UndefVarError: `Note` not defined
-
-Stacktrace:
- [1] top-level scope
-   @ In[28]:1</pre>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=ad98ea6f-1f39-477c-8379-faea62724ba0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=3bf9ae22-59d7-4517-8fe0-44db7b9a2bfc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
